@@ -1,0 +1,12 @@
+/target/
+/.tools/
+/.upstream/
+/.ui-test/
+/.env
+/config.toml
+/data/
+*.db
+*.db-shm
+*.db-wal
+*.log
+

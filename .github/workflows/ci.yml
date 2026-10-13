@@ -1,0 +1,42 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:8.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping:1})'"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: bot
+          POSTGRES_PASSWORD: test-password
+          POSTGRES_DB: bot_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U bot -d bot_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      POSTGRES_TEST_URL: postgres://bot:test-password@localhost:5432/bot_test
+      MONGODB_TEST_URL: mongodb://localhost:27017/bot_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg perl make gcc
+      - run: cargo fmt --check
+      - run: cargo clippy --locked --all-targets -- -D warnings
+      - run: cargo test --locked
+      - run: cargo test --locked -- --ignored

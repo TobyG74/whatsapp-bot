@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>WhatsApp Bot | Dashboard</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#login-title">Skip navigation</a>
+    <div class="topbar">
+      <a class="brand" href="#connection"
+        ><span class="brand-mark" aria-hidden="true">W</span> WhatsApp Bot
+        <span class="brand-label">CONSOLE</span></a
+      ><button id="theme" class="secondary" type="button" aria-pressed="false">
+        Light theme
+      </button>
+    </div>
+    <main>
+      <p id="notice" role="status" aria-live="polite">
+        Sign in with the token from your server configuration.
+      </p>
+      <section
+        id="login-panel"
+        class="login card"
+        aria-labelledby="login-title"
+      >
+        <p class="eyebrow">OPERATOR PANEL</p>
+        <h1 id="login-title" tabindex="-1">Your bot, in one place.</h1>
+        <p>
+          Monitor the connection, read message activity, and manage your bot.
+        </p>
+        <form id="login-form">
+          <label for="token">Dashboard token</label
+          ><input
+            id="token"
+            name="token"
+            type="password"
+            required
+            autocomplete="off"
+            minlength="32"
+            placeholder="Enter DASHBOARD_TOKEN"
+          />
+          <p class="hint">
+            Your token is only used while this page is open. Reload the page to
+            end your session.
+          </p>
+          <button type="submit">
+            Sign in to dashboard <span aria-hidden="true">→</span>
+          </button>
+        </form>
+        <div class="login-foot">
+          <span class="dot" aria-hidden="true"></span> Authenticated operator
+          access
+        </div>
+      </section>
+      <div id="workspace" hidden>
+        <aside class="sidebar">
+          <button
+            id="nav-toggle"
+            class="secondary"
+            type="button"
+            aria-expanded="false"
+            aria-controls="navigation"
+          >
+            Dashboard menu <span aria-hidden="true">☰</span>
+          </button>
+          <nav id="navigation" aria-label="Dashboard sections">
+            <p class="eyebrow">WORKSPACE</p>
+            <a href="#connection" aria-current="page"
+              ><span aria-hidden="true">◉</span> Overview</a
+            >
+            <a href="#logs"
+              ><span aria-hidden="true">≡</span> Message activity</a
+            >
+            <a href="#send"
+              ><span aria-hidden="true">↗</span> Send &amp; queue</a
+            >
+            <a href="#commands"><span aria-hidden="true">/</span> Commands</a>
+            <a href="#settings"><span aria-hidden="true">⚙</span> Settings</a>
+            <div class="sidebar-foot">
+              <p>Automatic refresh<br /><strong>Every 5 seconds</strong></p>
+              <button id="logout" class="secondary" type="button">
+                Sign out of dashboard
+              </button>
+            </div>
+          </nav>
+        </aside>
+        <div class="content">
+          <header class="page-heading">
+            <div>
+              <p class="eyebrow">WHATSAPP / OPERATOR</p>
+              <h1 id="page-title" tabindex="-1">Overview</h1>
+              <p id="page-description">Current bot connection and activity.</p>
+            </div>
+            <div class="page-actions">
+              <span id="last-update">Not updated yet</span
+              ><button id="refresh" type="button" class="secondary">
+                Refresh status
+              </button>
+            </div>
+          </header>
+          <section id="connection" class="view" aria-label="Bot overview">
+            <dl id="metrics" class="metrics"></dl>
+            <div class="overview-grid">
+              <section
+                class="card connection-card"
+                aria-labelledby="connection-title"
+              >
+                <p class="eyebrow">WHATSAPP CONNECTION</p>
+                <h2 id="connection-title">Device status</h2>
+                <p
+                  id="connection-state"
+                  class="connection-state"
+                  data-state="starting"
+                >
+                  Loading status...
+                </p>
+                <p id="connection-help" class="hint"></p>
+                <img
+                  id="qr"
+                  hidden
+                  alt="QR code to link your WhatsApp device"
+                  width="256"
+                  height="256"
+                /><button id="reconnect" class="secondary" type="button">
+                  Reconnect
+                </button>
+                <p class="hint">
+                  Your session is saved for future connections. A QR code only
+                  appears during pairing.
+                </p>
+              </section>
+              <section class="card" aria-labelledby="runtime-title">
+                <p class="eyebrow">RUNTIME</p>
+                <h2 id="runtime-title">Bot information</h2>
+                <dl id="runtime" class="facts"></dl>
+                <p class="hint">
+                  Statistics are counted since this process started.
+                </p>
+                <a class="text-link" href="#logs"
+                  >View message activity <span aria-hidden="true">→</span></a
+                >
+              </section>
+            </div>
+          </section>
+          <section id="logs" class="view" hidden aria-labelledby="logs-title">
+            <div class="card">
+              <div class="section-heading">
+                <div>
+                  <p class="eyebrow">LIVE FEED</p>
+                  <h2 id="logs-title">Message activity</h2>
+                </div>
+                <label class="check"
+                  ><input id="pause-logs" type="checkbox" /> Pause feed</label
+                >
+              </div>
+              <p class="hint">
+                The latest 200 entries, including message previews. Commands are
+                logged when received; successful execution is logged separately.
+              </p>
+              <div class="filters">
+                <div>
+                  <label for="log-search">Search activity</label
+                  ><input
+                    id="log-search"
+                    type="search"
+                    placeholder="Message, sender, JID, command..."
+                  />
+                </div>
+                <div>
+                  <label for="log-kind">Activity type</label
+                  ><select id="log-kind">
+                    <option value="all">All activity</option>
+                    <option value="command">Commands</option>
+                    <option value="message">Regular messages</option>
+                    <option value="system">System</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="log-scope">Chat type</label
+                  ><select id="log-scope">
+                    <option value="all">All chats</option>
+                    <option value="group">Group</option>
+                    <option value="private">Private</option>
+                  </select>
+                </div>
+              </div>
+              <p id="log-count" class="hint">Loading activity...</p>
+              <div id="log-content" class="log-feed" aria-live="off"></div>
+            </div>
+          </section>
+          <section id="send" class="view" hidden aria-labelledby="send-title">
+            <div class="send-grid">
+              <section class="card">
+                <p class="eyebrow">NEW MESSAGE</p>
+                <h2 id="send-title">Send a message</h2>
+                <form id="send-form">
+                  <label for="recipient"
+                    >Recipient phone number or group JID</label
+                  ><input
+                    id="recipient"
+                    required
+                    placeholder="6281234567890"
+                    autocomplete="off"
+                  />
+                  <label for="kind">Message type</label
+                  ><select id="kind">
+                    <option value="text">Text</option>
+                    <option value="image">Image</option>
+                    <option value="video">Video</option>
+                    <option value="audio">Audio</option>
+                    <option value="document">Document</option>
+                    <option value="sticker">WebP sticker</option>
+                  </select>
+                  <label for="message">Text / caption</label
+                  ><textarea
+                    id="message"
+                    rows="4"
+                    maxlength="4096"
+                    required
+                    placeholder="Write your message..."
+                  ></textarea>
+                  <div id="media-field" hidden>
+                    <label for="media-file">Media file</label
+                    ><input id="media-file" type="file" />
+                    <p id="media-limit" class="hint"></p>
+                    <label for="mimetype">MIME type</label
+                    ><input
+                      id="mimetype"
+                      placeholder="image/jpeg"
+                      maxlength="128"
+                    />
+                  </div>
+                  <label for="send-at">Send time (optional)</label
+                  ><input id="send-at" type="datetime-local" />
+                  <p id="timezone" class="hint"></p>
+                  <button type="submit">
+                    Add to queue <span aria-hidden="true">↗</span>
+                  </button>
+                </form>
+              </section>
+              <section id="outbox" class="card" aria-labelledby="outbox-title">
+                <p class="eyebrow">OUTBOX</p>
+                <h2 id="outbox-title">Message queue</h2>
+                <p class="hint">
+                  Pending messages can be cancelled. For
+                  <code>delivery_unknown</code>, check whether the message
+                  arrived before trying again.
+                </p>
+                <div
+                  class="table-wrap"
+                  tabindex="0"
+                  role="region"
+                  aria-label="Message queue table"
+                >
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Details</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="jobs-body">
+                      <tr>
+                        <td colspan="5">Loading queue...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          </section>
+          <section
+            id="commands"
+            class="view"
+            hidden
+            aria-labelledby="commands-title"
+          >
+            <div class="card">
+              <p class="eyebrow">COMMAND REGISTRY</p>
+              <h2 id="commands-title">Available commands</h2>
+              <p class="hint">
+                Aliases follow the access, cooldown, and quota rules of their
+                main command.
+              </p>
+              <label for="command-search">Search commands or categories</label
+              ><input
+                id="command-search"
+                type="search"
+                placeholder="ping, owner, sticker..."
+              />
+              <div
+                class="table-wrap"
+                tabindex="0"
+                role="region"
+                aria-label="Commands table"
+              >
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Command / aliases</th>
+                      <th>Description</th>
+                      <th>Category</th>
+                      <th>Cooldown</th>
+                      <th>Quota cost</th>
+                      <th>Chat</th>
+                      <th>Access</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="commands-body">
+                    <tr>
+                      <td colspan="8">Loading commands...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div id="command-editor" class="card settings-card" hidden>
+              <h2 id="command-editor-title">Edit command</h2>
+              <p class="hint">
+                Changes apply immediately. Names and aliases must be unique.
+              </p>
+              <form id="command-form">
+                <div class="field-grid">
+                  <div>
+                    <label for="command-name">Command name</label>
+                    <input id="command-name" maxlength="32" required />
+                  </div>
+                  <div>
+                    <label for="command-aliases">Aliases (comma-separated)</label>
+                    <input id="command-aliases" />
+                  </div>
+                  <div>
+                    <label for="command-category">Category</label>
+                    <input id="command-category" maxlength="64" required />
+                  </div>
+                  <div>
+                    <label for="command-scope">Chat scope</label>
+                    <select id="command-scope">
+                      <option value="both">Group and private</option>
+                      <option value="group">Group only</option>
+                      <option value="private">Private only</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="command-cooldown">Cooldown (seconds)</label>
+                    <input id="command-cooldown" type="number" min="0" max="86400" required />
+                  </div>
+                  <div>
+                    <label for="command-cost">Quota cost</label>
+                    <input id="command-cost" type="number" min="0" max="10000" required />
+                  </div>
+                </div>
+                <label for="command-description">Custom description</label>
+                <input id="command-description" maxlength="512" aria-describedby="command-description-hint" />
+                <p id="command-description-hint" class="hint">
+                  Leave blank to use the default description. Names and aliases
+                  must start with a lowercase letter and use lowercase letters,
+                  digits, underscores or hyphens.
+                </p>
+                <label class="check" for="command-owner">
+                  <input id="command-owner" type="checkbox" />Owner access only
+                </label>
+                <p class="hint">Owner commands always require owner access.</p>
+                <div class="form-actions">
+                  <button type="submit">Save command</button>
+                  <button id="cancel-command" class="secondary" type="button">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </section>
+          <section
+            id="settings"
+            class="view"
+            hidden
+            aria-labelledby="settings-title"
+          >
+            <div class="card settings-card">
+              <p class="eyebrow">BOT SETTINGS</p>
+              <h2 id="settings-title">Bot settings</h2>
+              <p class="hint">
+                Changes take effect immediately and are saved to the database.
+              </p>
+              <form id="settings-form">
+                <label for="bot-name">Bot name</label
+                ><input id="bot-name" required maxlength="80" /><label
+                  for="owners"
+                  >Owner phone numbers (comma-separated)</label
+                ><input id="owners" required autocomplete="off" />
+                <div class="field-grid">
+                  <div>
+                    <label for="prefix">Command prefix</label
+                    ><input id="prefix" required maxlength="8" />
+                  </div>
+                  <div>
+                    <label for="language">Reply language</label
+                    ><select id="language" aria-describedby="language-hint">
+                      <option value="id">Indonesian</option>
+                      <option value="en">English</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="mode">Access mode</label
+                    ><select id="mode">
+                      <option value="self">Self: owners only</option>
+                      <option value="public">Public: all users</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="daily-limit">Daily user quota</label
+                    ><input
+                      id="daily-limit"
+                      type="number"
+                      min="1"
+                      max="10000"
+                      required
+                    />
+                  </div>
+                </div>
+                <p id="language-hint" class="hint">
+                  New languages are generated automatically when you save.
+                  Cached translations work without the translation service.
+                </p>
+                <button id="reload-languages" class="secondary" type="button">
+                  Reload language list
+                </button>
+                <p class="hint">
+                  Quotas reset at 00:00 UTC. Owners do not use quota; cooldowns
+                  still apply.
+                </p>
+                <button type="submit">Save settings</button>
+              </form>
+            </div>
+            <div class="card settings-card">
+              <p class="eyebrow">STICKERS</p>
+              <h2 id="sticker-title">Sticker settings</h2>
+              <p class="hint">
+                Pack and author names apply to newly generated stickers
+                immediately and are saved to the database.
+              </p>
+              <form id="sticker-form" aria-labelledby="sticker-title">
+                <label for="sticker-packname">Sticker pack name</label>
+                <input id="sticker-packname" maxlength="256" />
+                <label for="sticker-authorname">Sticker author name</label>
+                <input id="sticker-authorname" maxlength="256" />
+                <p class="hint">
+                  Each name allows up to 256 UTF-8 bytes without control characters.
+                </p>
+                <button type="submit">Save sticker settings</button>
+              </form>
+            </div>
+          </section>
+          <footer>
+            whatsapp-bot · Rust / Axum <span>Operator dashboard</span>
+          </footer>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,38 @@
+[bot]
+name = "WhatsApp Bot"
+owners = ["6281234567890"]
+prefix = "!"
+language = "id"
+mode = "self"
+daily_limit = 30
+autocorrect = true
+use_limit = true
+use_cooldown = true
+autoreadmessage = false
+autoreadstatus = false
+# Optional global cooldown in seconds; omit to use each command's cooldown.
+# cooldown_secs = 3
+
+[database]
+driver = "sqlite" # sqlite, postgres, atau mongodb
+url = "sqlite://data/bot.db?mode=rwc"
+# MongoDB: driver = "mongodb", url = "mongodb://127.0.0.1:27017/whatsapp_bot"
+# URL MongoDB wajib menyertakan nama database; kredensial sebaiknya melalui DATABASE_URL.
+# Untuk MongoDB, ubah media.max_bytes di bawah menjadi 8388608 (8 MiB).
+
+[connection]
+session_path = "data/whatsapp.db"
+operation_timeout_secs = 60
+
+[dashboard]
+bind = "127.0.0.1:3000"
+
+[media]
+max_bytes = 16777216
+ffmpeg = "ffmpeg"
+
+[sticker]
+# Startup defaults; saved dashboard sticker settings override these values in the database.
+packname = "WhatsApp Bot"
+authorname = "Your Name"
+

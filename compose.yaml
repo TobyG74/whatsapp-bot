@@ -1,0 +1,24 @@
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./config.toml:/app/config.toml:ro
+      - bot-data:/app/data
+    init: true
+    stop_grace_period: 90s
+  translate:
+    image: libretranslate/libretranslate:v1.9.6
+    profiles: [translation]
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - translation-models:/home/libretranslate/.local:rw
+volumes:
+  bot-data:
+  translation-models:
+
